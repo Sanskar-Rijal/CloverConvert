@@ -9,7 +9,7 @@ import { Job } from "../../services/fileService.js";
 //Message sent from Worker to MainThread
 export interface WorkerResultMessage {
   id: string; //Id of the job that just finished
-  okeeyy: boolean; //Whether the job was a success or failuer
+  okeeyy: boolean; //Whether the job was a success or failure
   result?: unknown;
   error?: string; //error message incase of failure
 }
@@ -43,7 +43,7 @@ export class WorkerPool {
 
   //Create Workers
   start(): void {
-    //if size if 4 then we create 4 workers using the for loop
+    //if size is 4 then we create 4 workers using the for loop
     for (let i = 0; i < this.size; i++) {
       //creating workers
       const w = new Worker(this.workerEntry, {
@@ -59,7 +59,7 @@ export class WorkerPool {
       w.on("message", (message) =>
         this.onMessage(ww, message as WorkerResultMessage),
       );
-      w.on("error", (error) => this.onError(ww, error));
+      w.on("error", (error) => this.onError(ww, error as Error));
       w.on("exit", (code) => this.onExit(ww, code));
 
       //storing all the workers created in the pool
@@ -91,5 +91,78 @@ export class WorkerPool {
     for (const ww of this.workers) {
       ww.worker.terminate();
     }
+  }
+
+  //find non busy worker and assign job form the queue
+  private drain(): void {
+    for (const ww of this.workers) {
+      if (this.queue.length === 0) {
+        return; // if there is no job in the queue we return
+      }
+      if (ww.busy) {
+        continue; //if the current worker is busy we skip to next worker
+      }
+      const job = this.queue.shift(); //get the first job from the queue
+      //if there is no job then we get undefiend so we check for that as well
+      if (!job) {
+        return;
+      }
+      //if we reached here then the worker is free and we have a job to assign
+      ww.assignJob(job.id);
+      ww.worker.postMessage(job); //send the job to the worker thread in worker.ts
+    }
+  }
+
+  //when the worker finishes the job
+  //we mark the worker as free and resolve or reject any pending promise with the result
+  //sent by the worker and execute next job in the queue if there is any
+  private onMessage(ww: WorkerWrapper, message: WorkerResultMessage): void {
+    //lets find the promise that belongs to this job
+    //earlier we stored it in a map with a key
+    const record = this.pending.get(message.id);
+
+    //now we mark the worker as free
+    ww.release();
+    //use drain method to find assign next job
+    this.drain();
+
+    if (!record) {
+      return;
+    }
+
+    //remove the job from pending map, as we have finished the job
+    this.pending.delete(message.id);
+
+    if (message.okeeyy) {
+      record.resolve(message.result);
+    } else {
+      record.reject(new Error(message.error || "Unknown error"));
+    }
+  }
+
+  //What to do when the worker fails?
+  private onError(ww: WorkerWrapper, error: Error): void {
+    if (ww.currentJobId) {
+      const record = this.pending.get(ww.currentJobId);
+      if (record) {
+        this.pending.delete(ww.currentJobId);
+        record.reject(error);
+      }
+    }
+    ww.release();
+    this.drain();
+  }
+
+  //This function runs when the worker stops for some reason
+  private onExit(ww: WorkerWrapper, code: number): void {
+    if (ww.currentJobId) {
+      const record = this.pending.get(ww.currentJobId);
+      if (record) {
+        this.pending.delete(ww.currentJobId);
+        record.reject(new Error(`Worker stopped with exit code ${code}`));
+      }
+    }
+    ww.release();
+    this.drain();
   }
 }
