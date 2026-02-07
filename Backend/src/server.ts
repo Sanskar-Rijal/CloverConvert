@@ -4,6 +4,9 @@ import express from "express";
 //App entry Point
 async function main() {
   const app = express();
+
+  app.use(express.json());
+
   const port = process.env.PORT || 9000;
   const server = app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
