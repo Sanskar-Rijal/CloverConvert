@@ -27,7 +27,7 @@ export const UPLOAD_DIR = path.resolve(SRC_ROOT, "uploads");
 export const OUTPUT_DIR = path.resolve(SRC_ROOT, "output");
 
 //Define limits
-export const MAX_FILE_MB = Number(process.env.MAX_FILE_MB || 100);
+export const MAX_FILE_MB = Number(process.env.MAX_FILE_MB || 110);
 export const MAX_IMAGES_PER_REQUEST = Number(
   process.env.MAX_IMAGES_PER_REQUEST || 30,
 );
