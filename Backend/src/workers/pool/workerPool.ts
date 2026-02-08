@@ -110,6 +110,7 @@ export class WorkerPool {
       //if we reached here then the worker is free and we have a job to assign
       ww.assignJob(job.id);
       ww.worker.postMessage(job); //send the job to the worker thread in worker.ts
+      //postMessage is a method to send data from main thread to worker and worker to main.
     }
   }
 
