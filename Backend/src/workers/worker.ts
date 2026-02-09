@@ -3,6 +3,7 @@ import { Job } from "../services/fileService.js";
 import { jpgToPdf } from "./tasks/jpgToPdf.js";
 import { pdfToJpg } from "./tasks/pdfToJpg.js";
 import { compressPdf } from "./tasks/compressPdf.js";
+import wordToPdf from "./tasks/wordToPdf.js";
 
 //between worker thread and main thread. Without this worker can't send results or receive jobs
 
@@ -38,11 +39,11 @@ parentPort.on("message", async (job: Job<any>) => {
       //   parentPort?.postMessage({ id: job.id, okeeyy: true, result });
       //   return;
       // }
-      // case "WORD_TO_PDF": {
-      //   const result = await wordToPdf();
-      //   parentPort?.postMessage({ id: job.id, okeeyy: true, result });
-      //   return;
-      // }
+      case "WORD_TO_PDF": {
+        const result = await wordToPdf(job.payload);
+        parentPort?.postMessage({ id: job.id, okeeyy: true, result });
+        return;
+      }
       default:
         throw new Error(`Unknown job type: ${job.type}`);
     }

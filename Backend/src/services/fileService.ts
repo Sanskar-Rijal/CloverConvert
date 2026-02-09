@@ -102,3 +102,25 @@ export function buildCompressPdfJob(
     },
   };
 }
+
+//Feature four: Word to Pdf
+export interface WordToPdfPayload {
+  inputPath: string;
+  outputDir: string;
+  outputPath: string;
+}
+
+export function buildWordToPdfJob(file: DiskFile): Job<WordToPdfPayload> {
+  const jobId = uuid();
+  const outputDir = path.resolve(OUTPUT_DIR, jobId);
+  const outputPath = path.resolve(outputDir, `${jobId}.pdf`);
+  return {
+    id: jobId,
+    type: "WORD_TO_PDF",
+    payload: {
+      inputPath: file.path,
+      outputDir: outputDir,
+      outputPath: outputPath,
+    },
+  };
+}

@@ -7,6 +7,7 @@ import {
   buildCompressPdfJob,
   buildJpgToPdfJob,
   buildPdftoJpgJob,
+  buildWordToPdfJob,
   qualityType,
 } from "../../services/fileService.js";
 import path from "node:path";
@@ -141,5 +142,51 @@ export function makeFileController(dependencies: { workerPool: WorkerPool }) {
     },
   );
 
-  return { jpgtoPdf, pdfToJpg, compressPdf };
+  //Feature Four: Word to Pdf
+  const wordToPdf = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const files = req.files as Express.Multer.File[] | undefined;
+
+      if (!files || files.length !== 1) {
+        return next(new AppError("Please upload a word document", 400));
+      }
+      const file = files[0];
+
+      const extension = file?.originalname.toLowerCase();
+
+      if (!extension?.endsWith(".doc") && !extension?.endsWith(".docx")) {
+        return next(
+          new AppError("Only .doc or .docx files are supported", 400),
+        );
+      }
+
+      if (!file) {
+        return next(
+          new AppError("File not found upload .doc or .docx files", 400),
+        );
+      }
+
+      const job = buildWordToPdfJob({
+        path: file.path,
+        orginalname: file.originalname,
+      });
+
+      const result = await workerPool.executeJob<
+        typeof job.payload,
+        { outputPath: string }
+      >(job);
+
+      res.download(
+        result.outputPath,
+        path.basename(result.outputPath),
+        async () => {
+          await safeUnlink(result.outputPath);
+          await safeRemoveDir(job.payload.outputDir);
+          await safeUnlink(file.path);
+        },
+      );
+    },
+  );
+
+  return { jpgtoPdf, pdfToJpg, compressPdf, wordToPdf };
 }
