@@ -2,9 +2,7 @@ import { parentPort } from "node:worker_threads"; //ParentPort is the communicat
 import { Job } from "../services/fileService.js";
 import { jpgToPdf } from "./tasks/jpgToPdf.js";
 import { pdfToJpg } from "./tasks/pdfToJpg.js";
-import { compressPdf } from "./tasks/compressPdf.js";
-import { pdfToWord } from "./tasks/pdfToWord.js";
-import wordToPdf from "./tasks/wordToPdf.js";
+
 //between worker thread and main thread. Without this worker can't send results or receive jobs
 
 if (!parentPort) {
@@ -23,11 +21,12 @@ parentPort.on("message", async (job: Job<any>) => {
         parentPort?.postMessage({ id: job.id, okeeyy: true, result });
         return;
       }
-      // case "PDF_TO_JPG": {
-      //   const result = await pdfToJpg();
-      //   parentPort?.postMessage({ id: job.id, okeeyy: true, result });
-      //   return;
-      // }
+      case "PDF_TO_JPG": {
+        const result = await pdfToJpg(job.payload);
+        //send success result back to the main thread
+        parentPort?.postMessage({ id: job.id, okeeyy: true, result });
+        return;
+      }
       // case "PDF_COMPRESS": {
       //   const result = await compressPdf();
       //   parentPort?.postMessage({ id: job.id, okeeyy: true, result });

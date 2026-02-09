@@ -22,6 +22,8 @@ export interface Job<TPayload> {
   payload: TPayload;
 }
 
+//Feature one : Jpg to pdf
+
 //Jpg to pdf Structure
 export interface JpgToPdfPayLoad {
   inputPaths: string[];
@@ -43,6 +45,34 @@ export function buildJpgToPdfJob(files: DiskFile[]): Job<JpgToPdfPayLoad> {
     payload: {
       inputPaths: files.map((f) => f.path),
       outputPath: path.resolve(OUTPUT_DIR, `${jobId}.pdf`),
+    },
+  };
+}
+
+//Feature two : Pdf to Jpg
+
+export interface PdfToJpg {
+  inputPath: string;
+  outputPath: string;
+  zipPath: string;
+  dpi: number;
+  //more the dpi higher the quality and size of output images
+  //dpi affects both speed and quality
+}
+
+export function buildPdftoJpgJob(
+  file: DiskFile,
+  opts?: { dpi?: number },
+): Job<PdfToJpg> {
+  const jobId = uuid();
+  return {
+    id: jobId,
+    type: "PDF_TO_JPG",
+    payload: {
+      inputPath: file.path,
+      outputPath: path.resolve(OUTPUT_DIR, jobId),
+      zipPath: path.resolve(OUTPUT_DIR, `${jobId}.zip`),
+      dpi: opts?.dpi || 300,
     },
   };
 }

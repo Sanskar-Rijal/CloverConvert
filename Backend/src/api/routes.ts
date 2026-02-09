@@ -3,7 +3,11 @@ import { WorkerPool } from "../workers/pool/workerPool.js";
 import { makeFileController } from "./controllers/fileController.js";
 import multer from "multer";
 import { ensureDirectoryExists, makeSafeFileName } from "../utils/fileUtils.js";
-import { MAX_FILE_MB, MAX_IMAGES_PER_REQUEST, UPLOAD_DIR } from "../utils/constants.js";
+import {
+  MAX_FILE_MB,
+  MAX_IMAGES_PER_REQUEST,
+  UPLOAD_DIR,
+} from "../utils/constants.js";
 
 export function buildRoutes(dependencies: { workerPool: WorkerPool }) {
   const router = Router();
@@ -24,16 +28,21 @@ export function buildRoutes(dependencies: { workerPool: WorkerPool }) {
         cb(error as Error, UPLOAD_DIR);
       }
     },
-    filename:(req,file,cb)=>{
-        cb(null, makeSafeFileName(file.originalname))
-    }
+    filename: (req, file, cb) => {
+      cb(null, makeSafeFileName(file.originalname));
+    },
   });
 
   const upload = multer({
     storage: multerStorage,
-    limits:{fileSize:MAX_FILE_MB * 1024 * 1024}
-})
+    limits: { fileSize: MAX_FILE_MB * 1024 * 1024 },
+  });
 
-router.post("/jpg-to-pdf",upload.array("images",MAX_IMAGES_PER_REQUEST),controller.jpgtoPdf);
-return router;
+  router.post(
+    "/jpg-to-pdf",
+    upload.array("images", MAX_IMAGES_PER_REQUEST),
+    controller.jpgtoPdf,
+  );
+  router.post("/pdf-to-jpg", upload.array("pdf", 1), controller.pdfToJpg);
+  return router;
 }

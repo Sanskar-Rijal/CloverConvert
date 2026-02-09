@@ -17,7 +17,15 @@ export async function safeUnlink(filePath: string): Promise<void> {
   }
 }
 
-//Generating file names for upload
+//deleet directories with all its content
+export async function safeRemoveDir(dirPath: string): Promise<void> {
+  await fs.rm(dirPath, {
+    recursive: true,
+    force: true,
+  });
+}
+
+//Generating our own file names to avoid conflicts, this is used in multer filename
 export function makeSafeFileName(orginalName: string): string {
   const extension = path.extname(orginalName); //extract .jpg or pdf from file name
   const randomName = Math.floor(Math.random() * 1e9).toString(); //generate random number and convert to string

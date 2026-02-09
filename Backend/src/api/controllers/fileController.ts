@@ -3,9 +3,12 @@ import "multer"; // Import to ensure Express.Multer types are augmented
 import catchAsync from "../../utils/catchAsync.js";
 import AppError from "../../utils/AppError.js";
 import { WorkerPool } from "../../workers/pool/workerPool.js";
-import { buildJpgToPdfJob } from "../../services/fileService.js";
+import {
+  buildJpgToPdfJob,
+  buildPdftoJpgJob,
+} from "../../services/fileService.js";
 import path from "node:path";
-import { safeUnlink } from "../../utils/fileUtils.js";
+import { safeRemoveDir, safeUnlink } from "../../utils/fileUtils.js";
 
 export function makeFileController(dependencies: { workerPool: WorkerPool }) {
   const { workerPool } = dependencies;
@@ -46,5 +49,48 @@ export function makeFileController(dependencies: { workerPool: WorkerPool }) {
       );
     },
   );
-  return { jpgtoPdf };
+
+  //Feature two: Pdf to Jpg
+  const pdfToJpg = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const files = req.files as Express.Multer.File[] | undefined;
+
+      if (!files || files.length !== 1) {
+        return next(new AppError("Please upload a pdf file", 400));
+      }
+
+      const file = files[0];
+
+      if (!file?.originalname.endsWith(".pdf")) {
+        return next(new AppError("Please upload a valid pdf file", 400));
+      }
+
+      const dpi = 300;
+      const job = buildPdftoJpgJob(
+        {
+          path: file.path,
+          orginalname: file.originalname,
+        },
+        {
+          dpi: dpi,
+        },
+      );
+
+      const result = await workerPool.executeJob<
+        typeof job.payload,
+        { zipPath: string }
+      >(job);
+
+      //now download the zip file on success
+      res.download(result.zipPath, "your_sweet_images.zip", async () => {
+        //cleanup function to delete the zip file
+        await safeUnlink(result.zipPath);
+        //we must delete the generated jpg files as well
+        await safeRemoveDir(job.payload.outputPath);
+        //deleting the uploaded pdf as well
+        await safeUnlink(file.path);
+      });
+    },
+  );
+  return { jpgtoPdf, pdfToJpg };
 }
