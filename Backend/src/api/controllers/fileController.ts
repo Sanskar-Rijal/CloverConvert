@@ -4,8 +4,10 @@ import catchAsync from "../../utils/catchAsync.js";
 import AppError from "../../utils/AppError.js";
 import { WorkerPool } from "../../workers/pool/workerPool.js";
 import {
+  buildCompressPdfJob,
   buildJpgToPdfJob,
   buildPdftoJpgJob,
+  qualityType,
 } from "../../services/fileService.js";
 import path from "node:path";
 import { safeRemoveDir, safeUnlink } from "../../utils/fileUtils.js";
@@ -65,7 +67,7 @@ export function makeFileController(dependencies: { workerPool: WorkerPool }) {
         return next(new AppError("Please upload a valid pdf file", 400));
       }
 
-      const dpi = 300;
+      const dpi = 150;
       const job = buildPdftoJpgJob(
         {
           path: file.path,
@@ -92,5 +94,52 @@ export function makeFileController(dependencies: { workerPool: WorkerPool }) {
       });
     },
   );
-  return { jpgtoPdf, pdfToJpg };
+
+  //Feature Three: Pdf compression
+  const compressPdf = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const files = req.files as Express.Multer.File[] | undefined;
+
+      if (!files || files.length !== 1) {
+        return next(new AppError("Please upload a pdf file", 400));
+      }
+
+      const quality = req.body.quality as any;
+      const allowed = ["screen", "ebook", "printer"];
+      if (!allowed.includes(quality)) {
+        return next(
+          new AppError(
+            `Invalid quality value. Allowed values are ${allowed.join(",")}`,
+            400,
+          ),
+        );
+      }
+
+      const file = files[0];
+
+      if (!file?.originalname.endsWith(".pdf")) {
+        return next(new AppError("Please upload a valid pdf file", 400));
+      }
+
+      const job = buildCompressPdfJob(
+        {
+          path: file.path,
+          orginalname: file.originalname,
+        },
+        quality,
+      );
+
+      const result = await workerPool.executeJob<
+        typeof job.payload,
+        { outputPath: string }
+      >(job);
+
+      res.download(result.outputPath, "compressed.pdf", async () => {
+        await safeUnlink(result.outputPath);
+        await safeUnlink(file.path);
+      });
+    },
+  );
+
+  return { jpgtoPdf, pdfToJpg, compressPdf };
 }

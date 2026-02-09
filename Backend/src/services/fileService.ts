@@ -76,3 +76,29 @@ export function buildPdftoJpgJob(
     },
   };
 }
+
+//Feature three: PDF Compression
+export type qualityType = "screen" | "ebook" | "printer";
+
+export interface CompressPdfPayload {
+  inputPath: string;
+  outputPath: string;
+  quality: qualityType;
+}
+
+export function buildCompressPdfJob(
+  file: DiskFile,
+  quality: CompressPdfPayload["quality"] = "ebook",
+): Job<CompressPdfPayload> {
+  const jobId = uuid();
+
+  return {
+    id: jobId,
+    type: "PDF_COMPRESS",
+    payload: {
+      inputPath: file.path,
+      outputPath: path.resolve(OUTPUT_DIR, `${jobId}.pdf`),
+      quality: quality,
+    },
+  };
+}
