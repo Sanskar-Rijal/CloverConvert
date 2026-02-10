@@ -1,0 +1,9 @@
+node_modules
+.vscode
+.env
+.git
+.gitignore
+npm-debug.log
+dist
+uploads
+output

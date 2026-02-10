@@ -11,7 +11,11 @@ export async function pdfToWord(
   //let's ensure output directory exists
   await ensureDirectoryExists(payload.outputDir);
 
-  const args = ["-m", "pdf2docx", payload.inputPath, payload.outputDir];
+  const args = [
+    "src/workers/tasks/scripts/pdf_to_docx.py",
+    payload.inputPath,
+    payload.outputPath,
+  ];
 
   try {
     await run("python3", args);
