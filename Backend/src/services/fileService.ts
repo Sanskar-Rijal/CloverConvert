@@ -106,7 +106,7 @@ export function buildCompressPdfJob(
 //Feature four: Word to Pdf
 export interface WordToPdfPayload {
   inputPath: string;
-  outputDir: string;
+  outputDir: string; //libre office requires output directory
   outputPath: string;
 }
 
@@ -117,6 +117,29 @@ export function buildWordToPdfJob(file: DiskFile): Job<WordToPdfPayload> {
   return {
     id: jobId,
     type: "WORD_TO_PDF",
+    payload: {
+      inputPath: file.path,
+      outputDir: outputDir,
+      outputPath: outputPath,
+    },
+  };
+}
+
+//Feature five: Pdf to Word
+export interface PdfToWordPayload {
+  inputPath: string;
+  outputDir: string;
+  outputPath: string;
+}
+
+export function buildPdftoWordJob(file: DiskFile): Job<PdfToWordPayload> {
+  const jobId = uuid();
+  const outputDir = path.resolve(OUTPUT_DIR, jobId);
+  const outputPath = path.resolve(outputDir, `${jobId}.docx`);
+
+  return {
+    id: jobId,
+    type: "PDF_TO_WORD",
     payload: {
       inputPath: file.path,
       outputDir: outputDir,

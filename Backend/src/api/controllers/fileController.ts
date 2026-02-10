@@ -7,6 +7,7 @@ import {
   buildCompressPdfJob,
   buildJpgToPdfJob,
   buildPdftoJpgJob,
+  buildPdftoWordJob,
   buildWordToPdfJob,
   qualityType,
 } from "../../services/fileService.js";
@@ -188,5 +189,47 @@ export function makeFileController(dependencies: { workerPool: WorkerPool }) {
     },
   );
 
-  return { jpgtoPdf, pdfToJpg, compressPdf, wordToPdf };
+  //Feature Five: Pdf to Word
+  const pdfToWord = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const files = req.files as Express.Multer.File[] | undefined;
+
+      if (!files || files.length !== 1) {
+        return next(new AppError("Please upload a PDF file", 400));
+      }
+      const file = files[0];
+
+      const extension = file?.originalname.toLowerCase();
+
+      if (!extension?.endsWith(".pdf")) {
+        return next(new AppError("Only .pdf files are supported", 400));
+      }
+
+      if (!file) {
+        return next(new AppError("File not found upload .pdf files", 400));
+      }
+
+      const job = buildPdftoWordJob({
+        path: file.path,
+        orginalname: file.originalname,
+      });
+
+      const result = await workerPool.executeJob<
+        typeof job.payload,
+        { outputPath: string }
+      >(job);
+
+      res.download(
+        result.outputPath,
+        path.basename(result.outputPath),
+        async () => {
+          await safeUnlink(result.outputPath);
+          await safeRemoveDir(job.payload.outputDir);
+          await safeUnlink(file.path);
+        },
+      );
+    },
+  );
+
+  return { jpgtoPdf, pdfToJpg, compressPdf, wordToPdf, pdfToWord };
 }

@@ -8,7 +8,8 @@ import path from "node:path";
 export default async function wordToPdf(
   payload: WordToPdfPayload,
 ): Promise<{ outputPath: string }> {
-  const SOFFICE = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+  // const SOFFICE = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+  const SOFFICE = process.env.SOFFICE || "unknown";
 
   //let's ensure output directory exists
   await ensureDirectoryExists(payload.outputDir);

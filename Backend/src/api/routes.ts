@@ -46,5 +46,6 @@ export function buildRoutes(dependencies: { workerPool: WorkerPool }) {
   router.post("/pdf-to-jpg", upload.array("pdf", 1), controller.pdfToJpg);
   router.post("/compress-pdf", upload.array("pdf", 1), controller.compressPdf);
   router.post("/word-to-pdf", upload.array("word", 1), controller.wordToPdf);
+  router.post("/pdf-to-word", upload.array("pdf", 1), controller.pdfToWord);
   return router;
 }
