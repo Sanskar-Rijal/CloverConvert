@@ -8,7 +8,7 @@ interface FeatureCardProps {
 export default function FeatureCard({ feature }: FeatureCardProps) {
   return (
     <Link
-      to={`/${feature.id}`}
+      to={`/convert/${feature.id}`}
       className="cursor-pointer rounded-lg border-2 border-transparent bg-white/80 p-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:border-emerald-500"
     >
       <div className="mb-4 text-4xl">{feature.emoji}</div>

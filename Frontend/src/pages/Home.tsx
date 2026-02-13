@@ -1,5 +1,5 @@
 import { features } from "../data/feature";
-import FeatureCard from "../features/featureCard";
+import FeatureCard from "../features/FeatureCard";
 
 export default function Home() {
   return (

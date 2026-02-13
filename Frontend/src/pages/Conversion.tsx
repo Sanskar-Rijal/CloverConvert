@@ -1,20 +1,24 @@
-import { FaArrowLeft } from "react-icons/fa";
-import useMoveBack from "../hooks/useMoveBack";
-import { features, type ConversionFeature } from "../data/feature";
 import { useState } from "react";
-
+import { features, type ConversionFeature } from "../data/feature";
+import useMoveBack from "../hooks/useMoveBack";
+import { FaArrowLeft } from "react-icons/fa";
 import Upload from "../features/Upload";
+import { useParams } from "react-router";
+import CompressionQuality from "../features/CompressionQuality";
 
-export default function PdfToWord() {
+export default function Conversion() {
   const moveBack = useMoveBack();
+  const { id } = useParams();
 
-  const data = features.find(
-    (feature: ConversionFeature) => feature.id === "pdf-to-word",
-  );
+  const data = features.find((feature: ConversionFeature) => feature.id === id);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | File[] | null>(null);
 
-  function handleFileSelect(file: File) {
+  const [compressionlevel, setCompressionlevel] = useState<
+    `screen` | `ebook` | `printer`
+  >("ebook");
+
+  function handleFileSelect(file: File | File[] | null) {
     setSelectedFile(file);
   }
 
@@ -44,7 +48,17 @@ export default function PdfToWord() {
           selectedFile={selectedFile}
           handleFileSelect={handleFileSelect}
           acceptedTypes={data?.acceptedTypes}
+          multiple={data?.id === "jpg-to-pdf"}
         />
+        {/* for compress pdf we select quality
+         */}
+        {data?.id === "compress-pdf" && (
+          <CompressionQuality
+            compressionlevel={compressionlevel}
+            setCompressionlevel={setCompressionlevel}
+          />
+        )}
+
         {/* Submit button  */}
         <button
           className={`flex w-full items-center justify-center rounded-lg px-4 py-3 font-semibold transition-all duration-300 ${
