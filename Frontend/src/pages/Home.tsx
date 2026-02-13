@@ -7,7 +7,7 @@ export default function Home() {
       {/* Title  */}
       <div className="mb-12 text-center">
         <h1 className="mb-3 text-4xl font-bold text-gray-800 md:text-5xl">
-          🍀CloverConver🍀
+          🍀CloverConvert🍀
         </h1>
         <p className="text-lg text-gray-600 md:text-xl">
           Convert your documents to the format you wish.
@@ -19,6 +19,9 @@ export default function Home() {
         {features.map((feature) => (
           <FeatureCard key={feature.id} feature={feature} />
         ))}
+      </div>
+      <div className="mt-12 text-center text-sm text-gray-500">
+        <p>Upload your file and convert it instantly, created by Sanskar ✌️</p>
       </div>
     </div>
   );
