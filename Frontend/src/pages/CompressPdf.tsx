@@ -4,6 +4,7 @@ import { features, type ConversionFeature } from "../data/feature";
 import { useState } from "react";
 
 import Upload from "../features/Upload";
+import CompressionQuality from "../features/CompressionQuality";
 
 export default function CompressPdf() {
   const moveBack = useMoveBack();
@@ -13,6 +14,10 @@ export default function CompressPdf() {
   );
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [compressionlevel, setCompressionlevel] = useState<
+    `screen` | `ebook` | `printer`
+  >("ebook");
 
   function handleFileSelect(file: File) {
     setSelectedFile(file);
@@ -44,6 +49,12 @@ export default function CompressPdf() {
           selectedFile={selectedFile}
           handleFileSelect={handleFileSelect}
           acceptedTypes={data?.acceptedTypes}
+        />
+
+        {/* select compression quality */}
+        <CompressionQuality
+          compressionlevel={compressionlevel}
+          setCompressionlevel={setCompressionlevel}
         />
         {/* Submit button  */}
         <button

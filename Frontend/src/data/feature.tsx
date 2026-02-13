@@ -43,3 +43,31 @@ export const features: ConversionFeature[] = [
     acceptedTypes: ".pdf",
   },
 ];
+
+export interface CompressionLevel {
+  title: string;
+  value: `screen` | `ebook` | `printer`;
+  description: string;
+  recommended: boolean;
+}
+
+export const compressionlevels: CompressionLevel[] = [
+  {
+    title: "Extreme Compression",
+    value: "screen",
+    description: "Less quality, high compression",
+    recommended: false,
+  },
+  {
+    title: "Recommended Compression",
+    value: "ebook",
+    description: "good quality, good compression",
+    recommended: true,
+  },
+  {
+    title: "High Quality Compression",
+    value: "printer",
+    description: "High quality, less compression",
+    recommended: false,
+  },
+];
