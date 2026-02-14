@@ -150,7 +150,7 @@ export default function Upload({
               <>
                 <CiFileOn className="mb-3 h-12 w-12 text-emerald-600" />
                 {/* filename  */}
-                <p className="mb-2 line-clamp-1 font-semibold text-gray-800">
+                <p className="mb-2 max-w-full truncate font-semibold text-gray-800">
                   {files[0].name}
                 </p>
                 {/* filesize */}
