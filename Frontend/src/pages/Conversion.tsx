@@ -23,7 +23,6 @@ export default function Conversion() {
 
   //from tanstack
   const { isSuccess, isPending, convert } = useConversion();
-  console.log("isSuccess: ", isSuccess, "isPending: ", isPending);
 
   function handleFileSelect(file: File | File[] | null) {
     setSelectedFile(file);
