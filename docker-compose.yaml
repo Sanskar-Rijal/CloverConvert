@@ -10,11 +10,11 @@ services:
       # ignore live sync for node_modules
       - /usr/src/app/node_modules
 
-    frontend:
-      build: ./Frontend
-      ports:
-        - 5173:5173
-      volumes:
-        - ./Frontend:/usr/src/app
-        # ignore live sync for node_modules
-        - /usr/src/app/node_modules
+  frontend:
+    build: ./Frontend
+    ports:
+      - 5173:5173
+    volumes:
+      - ./Frontend:/usr/src/app
+      # ignore live sync for node_modules
+      - /usr/src/app/node_modules
