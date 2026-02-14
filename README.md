@@ -1,8 +1,8 @@
 
 
-# CloverConvert Backend
+# 🍀CloverConvert🍀
 
-CloverConvert is a backend service for document conversion. It provides APIs to convert and process files such as PDFs, images, and Word documents. The system is designed to be reliable, scalable, and fully containerized using Docker.
+CloverConvert is a webapp for document conversion. It provides APIs to convert and process files such as PDFs, images, and Word documents. The system is designed to be reliable, scalable, and fully containerized using Docker.
 
 All document processing tools run inside Docker containers, so no local system dependencies are required.
 
@@ -23,6 +23,8 @@ All document processing tools run inside Docker containers, so no local system d
 ## Technology Stack
 
 - Node.js (API and worker orchestration)
+- React.Js
+- Tanstack ReactQuery
 - TypeScript
 - Python (document processing tools)
 - pdf2docx (PDF to Word conversion)
@@ -43,28 +45,6 @@ All document processing tools run inside Docker containers, so no local system d
 
 ---
 
-## Project Structure
-
-```
-src/
-├── api/
-│   ├── controllers/
-│   └── routes.ts
-├── services/
-│   └── fileService.ts
-├── workers/
-│   ├── pool/
-│   └── tasks/
-│       └── scripts/
-│           └── pdf_to_docx.py
-├── utils/
-├── uploads/
-├── outputs/
-Dockerfile
-```
-
----
-
 ## Requirements
 
 - Docker
@@ -76,6 +56,15 @@ No other dependencies are required.
 
 ## Running the Project
 
+```bash
+git clone https://github.com/Sanskar-Rijal/CloverConvert
+```
+Go to the CloverConvert Directory
+```bash
+cd CloverConvert
+```
+
+Run Docker command
 ```bash
 docker-compose -f docker-compose.yaml up  -d --build
 ```
