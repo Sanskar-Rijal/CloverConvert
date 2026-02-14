@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec node --loader ts-node/esm src/server.ts",
-    "build": "tsc",
+    "build": "tsc && cp -r src/workers/tasks/scripts dist/workers/tasks/scripts",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

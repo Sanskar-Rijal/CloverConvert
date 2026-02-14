@@ -4,6 +4,10 @@ import { ensureDirectoryExists } from "../../utils/fileUtils.js";
 import fs from "node:fs/promises";
 import run from "../../utils/Run.js";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function pdfToWord(
   payload: PdfToWordPayload,
@@ -11,8 +15,9 @@ export async function pdfToWord(
   //let's ensure output directory exists
   await ensureDirectoryExists(payload.outputDir);
 
+  const scriptPath = path.resolve(__dirname, "scripts", "pdf_to_docx.py");
   const args = [
-    "src/workers/tasks/scripts/pdf_to_docx.py",
+    scriptPath,
     payload.inputPath,
     payload.outputPath,
   ];

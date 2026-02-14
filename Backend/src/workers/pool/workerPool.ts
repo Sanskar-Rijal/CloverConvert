@@ -34,7 +34,7 @@ export class WorkerPool {
   >();
   private workers: WorkerWrapper[] = []; //Stores all workers in the pool with it's state
 
-  private workerEntry = path.resolve(__dirname, "..", "worker.ts"); //this gives us /src/workers/worker.ts
+  private workerEntry = path.resolve(__dirname, "..", "worker.js"); //this gives us /src/workers/worker.js (or dist/workers/worker.js after build)
 
   constructor(options: { size: number }) {
     //options is just a normal parameter which is an object with size property and size must be number
