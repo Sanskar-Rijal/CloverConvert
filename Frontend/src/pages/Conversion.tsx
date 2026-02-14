@@ -6,6 +6,8 @@ import Upload from "../features/Upload";
 import { useParams } from "react-router";
 import CompressionQuality from "../features/CompressionQuality";
 import useConversion from "../hooks/useConversion";
+import { GiClover } from "react-icons/gi";
+import LoadingAnimation from "../features/LoadingAnimation";
 
 export default function Conversion() {
   const moveBack = useMoveBack();
@@ -55,6 +57,8 @@ export default function Conversion() {
         <span className="font-bold">Back to home</span>
       </button>
 
+      {isPending && <LoadingAnimation />}
+
       {/* main card */}
       <div className="rounded-xl bg-white/80 p-8 shadow-lg">
         {/* header */}
@@ -66,32 +70,50 @@ export default function Conversion() {
           <p className="text-gray-600">{data?.description}</p>
         </div>
         {/* file upload drag and drop or choose from location  */}
-        <Upload
-          selectedFile={selectedFile}
-          handleFileSelect={handleFileSelect}
-          acceptedTypes={data?.acceptedTypes}
-          multiple={data?.id === "jpg-to-pdf"}
-        />
-        {/* for compress pdf we select quality
-         */}
-        {data?.id === "compress-pdf" && (
-          <CompressionQuality
-            compressionlevel={compressionlevel}
-            setCompressionlevel={setCompressionlevel}
-          />
-        )}
+        {!isSuccess ? (
+          <>
+            <Upload
+              selectedFile={selectedFile}
+              handleFileSelect={handleFileSelect}
+              acceptedTypes={data?.acceptedTypes}
+              multiple={data?.id === "jpg-to-pdf"}
+            />
+            {/* for compress pdf we select quality
+             */}
+            {data?.id === "compress-pdf" && (
+              <CompressionQuality
+                compressionlevel={compressionlevel}
+                setCompressionlevel={setCompressionlevel}
+              />
+            )}
 
-        {/* Submit button  */}
-        <button
-          onClick={handleSubmit}
-          className={`flex w-full items-center justify-center rounded-lg px-4 py-3 font-semibold transition-all duration-300 ${
-            selectedFile && !isPending
-              ? `bg-emerald-600 text-white shadow-md hover:bg-emerald-700 hover:shadow-lg`
-              : `cursor-not-allowed bg-gray-300 text-gray-500`
-          }`}
-        >
-          {isPending ? "Converting Please Wait..." : "Convert File"}
-        </button>
+            {/* Submit button  */}
+            <button
+              onClick={handleSubmit}
+              className={`flex w-full items-center justify-center rounded-lg px-4 py-3 font-semibold transition-all duration-300 ${
+                selectedFile && !isPending
+                  ? `bg-emerald-600 text-white shadow-md hover:bg-emerald-700 hover:shadow-lg`
+                  : `cursor-not-allowed bg-gray-300 text-gray-500`
+              }`}
+            >
+              {isPending ? "Converting Please Wait..." : "Convert File"}
+            </button>
+          </>
+        ) : (
+          <div className="py-8 text-center">
+            <GiClover className="mx-auto mb-4 h-16 w-16 text-emerald-600" />
+            <h3 className="mb-2 text-2xl font-bold text-gray-800">Success!</h3>
+            <p className="mb-6 text-gray-600">
+              Your download will start shortly.
+            </p>
+            <button
+              onClick={moveBack}
+              className="rounded-lg bg-emerald-600 px-8 py-3 font-medium text-white transition-colors duration-200 hover:bg-emerald-700"
+            >
+              Convert Another File
+            </button>
+          </div>
+        )}
       </div>
       {/* additional information  */}
       <div className="mt-6 text-center text-sm text-gray-500">

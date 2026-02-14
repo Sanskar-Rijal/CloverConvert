@@ -16,8 +16,9 @@ export default async function makeApiRequest({
   });
 
   const disposition = response.headers["content-disposition"];
+  console.log("Content-Disposition header:", disposition);
   const filename =
-    disposition?.match(/filename="?(.+)"?/)?.[1] ?? "converted-file";
+    disposition?.match(/filename="([^"]+)"/)?.[1]?.trim() ?? "converted-file";
 
   return { blob: response.data, filename };
 }

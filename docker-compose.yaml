@@ -1,7 +1,6 @@
 services:
   backend:
-    build: 
-      ./Backend
+    build: ./Backend
     ports:
       - 3000:3000
     env_file:
@@ -10,3 +9,12 @@ services:
       - ./Backend:/usr/src/app
       # ignore live sync for node_modules
       - /usr/src/app/node_modules
+
+    frontend:
+      build: ./Frontend
+      ports:
+        - 5173:5173
+      volumes:
+        - ./Frontend:/usr/src/app
+        # ignore live sync for node_modules
+        - /usr/src/app/node_modules
