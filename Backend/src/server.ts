@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import { prepareStorage } from "./services/fileService.js";
 import { ensureDirectoryExists } from "./utils/fileUtils.js";
 import { OUTPUT_DIR, UPLOAD_DIR } from "./utils/constants.js";
@@ -14,6 +15,13 @@ async function main() {
   const app = express();
   //Basic middleware to parse json
   app.use(express.json());
+
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+    }),
+  );
+
   //prepare folder
   await prepareStorage();
 

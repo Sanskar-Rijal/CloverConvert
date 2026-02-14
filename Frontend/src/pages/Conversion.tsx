@@ -5,6 +5,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Upload from "../features/Upload";
 import { useParams } from "react-router";
 import CompressionQuality from "../features/CompressionQuality";
+import useConversion from "../hooks/useConversion";
 
 export default function Conversion() {
   const moveBack = useMoveBack();
@@ -18,8 +19,29 @@ export default function Conversion() {
     `screen` | `ebook` | `printer`
   >("ebook");
 
+  //from tanstack
+  const { isSuccess, isPending, convert } = useConversion();
+  console.log("isSuccess: ", isSuccess, "isPending: ", isPending);
+
   function handleFileSelect(file: File | File[] | null) {
     setSelectedFile(file);
+  }
+
+  //handle submit
+  function handleSubmit() {
+    if (!selectedFile) return;
+    const formData = new FormData();
+    if (Array.isArray(selectedFile)) {
+      selectedFile.forEach((file) => formData.append("files", file));
+    } else {
+      formData.append("file", selectedFile);
+    }
+    if (compressionlevel) {
+      formData.append("quality", compressionlevel);
+    }
+    if (data) {
+      convert({ formData, route: data.route });
+    }
   }
 
   return (
@@ -61,13 +83,14 @@ export default function Conversion() {
 
         {/* Submit button  */}
         <button
+          onClick={handleSubmit}
           className={`flex w-full items-center justify-center rounded-lg px-4 py-3 font-semibold transition-all duration-300 ${
-            selectedFile
+            selectedFile && !isPending
               ? `bg-emerald-600 text-white shadow-md hover:bg-emerald-700 hover:shadow-lg`
               : `cursor-not-allowed bg-gray-300 text-gray-500`
           }`}
         >
-          Convert File
+          {isPending ? "Converting Please Wait..." : "Convert File"}
         </button>
       </div>
       {/* additional information  */}

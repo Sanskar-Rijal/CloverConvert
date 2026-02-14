@@ -40,12 +40,12 @@ export function buildRoutes(dependencies: { workerPool: WorkerPool }) {
 
   router.post(
     "/jpg-to-pdf",
-    upload.array("images", MAX_IMAGES_PER_REQUEST),
+    upload.array("files", MAX_IMAGES_PER_REQUEST),
     controller.jpgtoPdf,
   );
-  router.post("/pdf-to-jpg", upload.array("pdf", 1), controller.pdfToJpg);
-  router.post("/compress-pdf", upload.array("pdf", 1), controller.compressPdf);
-  router.post("/word-to-pdf", upload.array("word", 1), controller.wordToPdf);
-  router.post("/pdf-to-word", upload.array("pdf", 1), controller.pdfToWord);
+  router.post("/pdf-to-jpg", upload.array("file", 1), controller.pdfToJpg);
+  router.post("/compress-pdf", upload.array("file", 1), controller.compressPdf);
+  router.post("/word-to-pdf", upload.array("file", 1), controller.wordToPdf);
+  router.post("/pdf-to-word", upload.array("file", 1), controller.pdfToWord);
   return router;
 }

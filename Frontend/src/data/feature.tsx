@@ -4,6 +4,8 @@ export interface ConversionFeature {
   emoji: string;
   description: string;
   acceptedTypes: string;
+  route: string;
+  type: string;
 }
 
 export const features: ConversionFeature[] = [
@@ -13,6 +15,8 @@ export const features: ConversionFeature[] = [
     emoji: "🖼️",
     description: "Convert PDF pages into JPG images",
     acceptedTypes: ".pdf",
+    route: "pdf-to-jpg",
+    type: "pdf",
   },
   {
     id: "jpg-to-pdf",
@@ -20,6 +24,8 @@ export const features: ConversionFeature[] = [
     emoji: "📄",
     description: "Combine images into a single PDF",
     acceptedTypes: ".jpg,.jpeg,.png",
+    route: "jpg-to-pdf",
+    type: "images",
   },
   {
     id: "pdf-to-word",
@@ -27,6 +33,8 @@ export const features: ConversionFeature[] = [
     emoji: "📝",
     description: "Convert PDF files into editable Word documents",
     acceptedTypes: ".pdf",
+    route: "pdf-to-word",
+    type: "pdf",
   },
   {
     id: "word-to-pdf",
@@ -34,6 +42,8 @@ export const features: ConversionFeature[] = [
     emoji: "📘",
     description: "Convert Word documents into PDF format",
     acceptedTypes: ".doc,.docx",
+    route: "word-to-pdf",
+    type: "word",
   },
   {
     id: "compress-pdf",
@@ -41,6 +51,8 @@ export const features: ConversionFeature[] = [
     emoji: "📉",
     description: "Reduce PDF file size without losing quality",
     acceptedTypes: ".pdf",
+    route: "compress-pdf",
+    type: "pdf",
   },
 ];
 
