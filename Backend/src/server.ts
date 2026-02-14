@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 import { prepareStorage } from "./services/fileService.js";
 import { ensureDirectoryExists } from "./utils/fileUtils.js";
 import { OUTPUT_DIR, UPLOAD_DIR } from "./utils/constants.js";
@@ -23,6 +24,18 @@ async function main() {
     }),
   );
 
+  //implementing rate limiting
+  const limiter = rateLimit({
+    limit: 60,
+    windowMs: 15 * 60 * 1000, //this will allow 60 request from the same ip in 15 min
+    //once limit is crosses we can send error message
+    message:
+      "Too many request from the same IP, please try again after sometime!!",
+  });
+
+  app.use(limiter);
+
+  app.use("/api", limiter); // this will apply for all route that starts with /api
   //prepare folder
   await prepareStorage();
 
