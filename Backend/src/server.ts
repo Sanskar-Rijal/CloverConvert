@@ -17,9 +17,14 @@ async function main() {
   //Basic middleware to parse json
   app.use(express.json());
 
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "https://cloverconvert.duckdns.org",
+  ];
+
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: allowedOrigins,
       exposedHeaders: ["Content-Disposition"],
     }),
   );
