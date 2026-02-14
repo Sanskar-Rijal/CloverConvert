@@ -18,6 +18,7 @@ async function main() {
   app.use(express.json());
 
   const allowedOrigins = [
+    "http://localhost:8080",
     "http://localhost:5173",
     "https://cloverconvert.duckdns.org",
   ];
