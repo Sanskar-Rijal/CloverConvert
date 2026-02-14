@@ -46,10 +46,12 @@ export class WorkerPool {
     //if size is 4 then we create 4 workers using the for loop
     for (let i = 0; i < this.size; i++) {
       //creating workers
+      const isDev = process.env.NODE_ENV !== "production";
       const w = new Worker(this.workerEntry, {
         env: process.env,
-        execArgv: ["--loader", "ts-node/esm"],
-      }); //this runs worker.ts in a seperate thread
+        ...(isDev && { execArgv: ["--loader", "ts-node/esm"] }), //we need this --loader and ts-node/esm in development because our worker file is in typescript and
+        // we want to run it without building the whole project every time but in production we will build the project so we don't need this
+      }); //this runs worker.js in a seperate thread
 
       //Wrapping the worker in our WorkerWrapper class to keep track of it's state and what job is it doing.
       const ww = new WorkerWrapper(w);
