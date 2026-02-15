@@ -23,6 +23,7 @@ All document processing tools run inside Docker containers, so no local system d
 ## Technology Stack
 
 - Node.js (API and worker orchestration)
+- nginx for reverse proxy
 - React.Js
 - Tanstack ReactQuery
 - TypeScript
